@@ -39,7 +39,7 @@ public class AuthenticationController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtils jwtUtils;
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -56,23 +56,23 @@ public class AuthenticationController {
                 userDetails.getEmail(),
                 roles));
     }
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
-        Set<String> strRoles = signUpRequest.getRole();
+        User user = new User(registerRequest.getUsername(),
+                registerRequest.getEmail(),
+                encoder.encode(registerRequest.getPassword()));
+        Set<String> strRoles = registerRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -90,6 +90,16 @@ public class AuthenticationController {
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
+                        break;
+                    case "applicant":
+                        Role applicantRole = roleRepository.findByName(ERole.ROLE_APPLICANT)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(applicantRole);
+                    break;
+                    case "recruiter":
+                        Role recruiterRole = roleRepository.findByName(ERole.ROLE_RECRUITER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(recruiterRole);
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)

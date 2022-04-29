@@ -31,4 +31,14 @@ public class TestController {
     public String adminAccess() {
         return "Admin Board.";
     }
+    @GetMapping("/recruiter")
+    @PreAuthorize("hasRole('RECRUITER')")
+    public String recruiterAccess() {
+        return "Admin Board.";
+    }
+    @GetMapping("/applicant")
+    @PreAuthorize("hasRole('APPLICANT')")
+    public String applicantAccess() {
+        return "Admin Board.";
+    }
 }

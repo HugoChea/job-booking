@@ -13,7 +13,9 @@ CREATE TABLE "public"."roles" (
 INSERT INTO "roles" ("id", "name") VALUES
 (1,	'ROLE_USER'),
 (2,	'ROLE_MODERATOR'),
-(3,	'ROLE_ADMIN');
+(3,	'ROLE_ADMIN'),
+(4,	'ROLE_APPLICANT'),
+(5,	'ROLE_RECRUITER');
 
 DROP TABLE IF EXISTS "user_roles";
 CREATE TABLE "public"."user_roles" (
