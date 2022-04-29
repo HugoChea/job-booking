@@ -4,10 +4,14 @@ services:
 
   db:
     image: postgres
+    volumes:
+    #     - ~/volumes/jhipster/postgress/postgresql/:/var/lib/postgresql/data/
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
     ports:
       - "5432:5432"
     environment:
+      POSTGRES_DB: job_booking
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
