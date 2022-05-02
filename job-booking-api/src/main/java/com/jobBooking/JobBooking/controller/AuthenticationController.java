@@ -1,6 +1,7 @@
 package com.jobBooking.JobBooking.controller;
 
 import com.jobBooking.JobBooking.enumeration.ERole;
+import com.jobBooking.JobBooking.model.Applicant;
 import com.jobBooking.JobBooking.model.Role;
 import com.jobBooking.JobBooking.model.User;
 import com.jobBooking.JobBooking.payload.request.LoginRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -69,9 +71,9 @@ public class AuthenticationController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
         // Create new user's account
-        User user = new User(registerRequest.getUsername(),
-                registerRequest.getEmail(),
-                encoder.encode(registerRequest.getPassword()));
+
+        AtomicBoolean isRecruiter = new AtomicBoolean(false);
+        
         Set<String> strRoles = registerRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
@@ -92,11 +94,13 @@ public class AuthenticationController {
                         roles.add(modRole);
                         break;
                     case "applicant":
+                        isRecruiter.set(false);
                         Role applicantRole = roleRepository.findByName(ERole.ROLE_APPLICANT)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(applicantRole);
                     break;
                     case "recruiter":
+                        isRecruiter.set(true);
                         Role recruiterRole = roleRepository.findByName(ERole.ROLE_RECRUITER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(recruiterRole);
@@ -108,6 +112,26 @@ public class AuthenticationController {
                 }
             });
         }
+        
+        User user = new User();
+
+        if (isRecruiter.get()){
+
+        }
+        else if (!isRecruiter.get()){
+            user = new Applicant(registerRequest.getUsername(),
+                    registerRequest.getEmail(),
+                    encoder.encode(registerRequest.getPassword()),
+                    null,
+                    new HashSet<>());
+        }
+        else{
+            user = new User(registerRequest.getUsername(),
+                    registerRequest.getEmail(),
+                    encoder.encode(registerRequest.getPassword()));
+        }
+
+
         user.setRoles(roles);
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

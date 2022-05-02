@@ -2,27 +2,46 @@ package com.jobBooking.JobBooking.model;
 
 import com.jobBooking.JobBooking.enumeration.Status;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "application_job")
 public class Application {
 
+    @Id
+    Integer id;
+
+    @Column(name = "company")
     String company;
 
+    @Column(name = "position")
     String position;
 
+    @Column(name = "stack")
     String stack;
 
+    @Column(name = "description")
     String description;
 
+    @Column(name = "link")
     String link;
 
+    @Column(name = "contact")
     String contact;
 
+    @Column(name = "comment")
     String comment;
 
+    @Column(name = "date")
     LocalDate date;
 
+    @Column(name = "status")
     Status status;
+
+    @ManyToOne
+    @JoinColumn(name="id_user", nullable=false)
+    Applicant applicant;
 
     public Application() {
     }

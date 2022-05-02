@@ -42,3 +42,44 @@ CREATE TABLE "public"."users" (
 
 ALTER TABLE ONLY "public"."user_roles" ADD CONSTRAINT "fkh8ciramu9cc9q3qcqiv4ue8a6" FOREIGN KEY (role_id) REFERENCES roles(id) NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."user_roles" ADD CONSTRAINT "fkhfh9dx7w3ubf1co1vdev94g3f" FOREIGN KEY (user_id) REFERENCES users(id) NOT DEFERRABLE;
+
+DROP TABLE IF EXISTS "applicant";
+CREATE TABLE "public"."applicant" (
+    "photo_url" character varying(255),
+    "id" bigint NOT NULL,
+    CONSTRAINT "applicant_id" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+
+DROP TABLE IF EXISTS "application_job";
+DROP SEQUENCE IF EXISTS application_job_id_seq;
+CREATE SEQUENCE application_job_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."application_job" (
+    "id" integer DEFAULT nextval('application_job_id_seq') NOT NULL,
+    "company" character varying(255) NOT NULL,
+    "position" character varying(255) NOT NULL,
+    "stack" character varying(255) NOT NULL,
+    "description" text NOT NULL,
+    "link" character varying(255) NOT NULL,
+    "contact" character varying(255) NOT NULL,
+    "comment" character varying(255) NOT NULL,
+    "date" date NOT NULL,
+    "status" character varying(255) NOT NULL,
+    "id_user" integer NOT NULL,
+    CONSTRAINT "application_job_pkey" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+
+INSERT INTO "roles" ("id", "name") VALUES
+(1,	'ROLE_USER'),
+(2,	'ROLE_MODERATOR'),
+(3,	'ROLE_ADMIN'),
+(4,	'ROLE_APPLICANT'),
+(5,	'ROLE_RECRUITER');
+
+ALTER TABLE ONLY "public"."applicant" ADD CONSTRAINT "applicant_id_fkey" FOREIGN KEY (id) REFERENCES users(id) NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."application_job" ADD CONSTRAINT "application_job_id_user_fkey" FOREIGN KEY (id_user) REFERENCES users(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."application_job" ADD CONSTRAINT "fkrm3vi3ar7vyv0qmptcpceikbw" FOREIGN KEY (id_user) REFERENCES applicant(id) NOT DEFERRABLE;
+
